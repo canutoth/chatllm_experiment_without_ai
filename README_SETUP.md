@@ -69,6 +69,20 @@ ou
 1. `GET /health` retorna status da API.
 2. `POST /api/chat` envia mensagem para o modelo e retorna resposta.
 3. `POST /api/chat/stream` envia mensagem e retorna a resposta em streaming (SSE), com renderizacao progressiva no chat.
+4. `GET /api/instructions` retorna as instrucoes personalizadas (system prompt) do usuario logado.
+5. `PUT /api/instructions` salva as instrucoes do usuario logado (`{"content": "..."}`, ate 4000 caracteres; vazio restaura o padrao).
+6. `DELETE /api/instructions` restaura o prompt padrao do usuario logado.
+
+Todos os endpoints `/api/chat*`, `/api/sessions*` e `/api/instructions` exigem o header `Authorization: Bearer <token>`.
+
+## Instrucoes personalizadas
+
+Cada usuario pode editar o system prompt enviado ao modelo pelo botao **Instrucoes** no topo do chat.
+
+1. As instrucoes ficam na tabela `user_instructions` do SQLite, uma linha por usuario.
+2. Quem nunca editou (ou restaurou o padrao) nao tem linha na tabela e recebe o prompt padrao (`DEFAULT_SYSTEM_PROMPT` em `backend/services/openrouter.py`).
+3. `/api/chat` e `/api/chat/stream` usam as instrucoes do usuario do token. A geracao automatica de titulo continua usando o prompt padrao.
+4. Os endpoints nao recebem id de usuario: o usuario vem sempre do token, entao ninguem le ou altera as instrucoes de outra pessoa.
 
 Exemplo de request:
 
