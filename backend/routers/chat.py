@@ -13,6 +13,7 @@ from backend.config import OPENROUTER_MODEL_DEFAULT
 from backend.database import get_db
 from backend.models import ChatMessage, ChatSession, User
 from backend.schemas.chat import ChatRequest, ChatResponse
+from backend.services.instructions import resolve_system_prompt
 from backend.services.openrouter import OpenRouterConfigError, generate_reply, stream_reply
 
 
@@ -79,12 +80,14 @@ async def chat(
     session = _ensure_session(payload.session_id, current_user, db)
     session_id = session.id
     current_user_id = current_user.id
+    system_prompt = resolve_system_prompt(db, current_user_id)
 
     try:
         reply, model_name = await generate_reply(
             user_message=payload.message,
             history=[item.model_dump() for item in payload.history],
             model=payload.model,
+            system_prompt=system_prompt,
         )
     except OpenRouterConfigError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
@@ -116,6 +119,7 @@ async def chat_stream(
     session_id = session.id
     current_user_id = current_user.id
     resolved_model = payload.model or OPENROUTER_MODEL_DEFAULT
+    system_prompt = resolve_system_prompt(db, current_user_id)
 
     is_first_message = session.title == "Novo chat" or not session.title
 
@@ -137,6 +141,7 @@ async def chat_stream(
                 user_message=payload.message,
                 history=[item.model_dump() for item in payload.history],
                 model=payload.model,
+                system_prompt=system_prompt,
             ):
                 full_reply += delta
                 yield f"data: {json.dumps({'delta': delta}, ensure_ascii=True)}\n\n"
