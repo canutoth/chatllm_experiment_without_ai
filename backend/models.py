@@ -19,6 +19,25 @@ class User(Base):
     )
 
 
+class UserInstruction(Base):
+    """Instrucoes personalizadas (system prompt) de um usuario.
+
+    Ausencia de registro significa que o usuario usa o prompt padrao.
+    """
+
+    __tablename__ = "user_instructions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("users.id"), unique=True, index=True, nullable=False
+    )
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None),
+        onupdate=lambda: datetime.now(timezone.utc).replace(tzinfo=None),
+    )
+
+
 class TokenBlacklist(Base):
     __tablename__ = "token_blacklist"
 
