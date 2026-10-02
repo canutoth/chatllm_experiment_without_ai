@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from backend.services.openrouter import (
+    DEFAULT_SYSTEM_PROMPT,
     OpenRouterConfigError,
     _build_messages,
     _build_headers,
@@ -63,6 +64,19 @@ class TestBuildMessages:
         """Deve aplicar strip no conteudo das mensagens."""
         messages = _build_messages(user_message="  Ola  ", history=[])
         assert messages[1]["content"] == "Ola"
+
+    def test_build_messages_uses_custom_system_prompt(self):
+        """Deve usar o system prompt informado no lugar do padrao."""
+        messages = _build_messages(
+            user_message="Ola", history=[], system_prompt="  Responda como um pirata.  "
+        )
+        assert messages[0] == {"role": "system", "content": "Responda como um pirata."}
+
+    def test_build_messages_blank_system_prompt_falls_back_to_default(self):
+        """System prompt vazio ou None deve cair no prompt padrao."""
+        for prompt in (None, "", "   "):
+            messages = _build_messages(user_message="Ola", history=[], system_prompt=prompt)
+            assert messages[0]["content"] == DEFAULT_SYSTEM_PROMPT
 
 
 class TestBuildHeaders:
@@ -132,6 +146,33 @@ class TestGenerateReply:
                     history=[],
                 )
                 assert model == "google/gemma-4-31b-it"
+
+    @pytest.mark.asyncio
+    async def test_generates_reply_sends_custom_system_prompt(self):
+        """Deve enviar o system prompt customizado no payload para a OpenRouter."""
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "choices": [
+                {"message": {"content": "Arr!"}}
+            ]
+        }
+
+        mock_client = MagicMock()
+        mock_client.post = AsyncMock(return_value=mock_response)
+        mock_client.__aenter__ = AsyncMock(return_value=mock_client)
+        mock_client.__aexit__ = AsyncMock(return_value=None)
+
+        with patch("backend.services.openrouter.OPENROUTER_API_KEY", "sk-test"):
+            with patch("httpx.AsyncClient", return_value=mock_client):
+                await generate_reply(
+                    user_message="Ola",
+                    history=[],
+                    system_prompt="Responda como um pirata.",
+                )
+
+        sent_messages = mock_client.post.call_args.kwargs["json"]["messages"]
+        assert sent_messages[0] == {"role": "system", "content": "Responda como um pirata."}
 
     @pytest.mark.asyncio
     async def test_raises_on_http_error(self):
