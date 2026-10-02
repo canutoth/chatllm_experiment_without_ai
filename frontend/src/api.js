@@ -100,3 +100,18 @@ async function getSessionMessages(sessionId) {
 async function deleteSession(sessionId) {
   await apiFetch(`/api/sessions/${sessionId}`, { method: "DELETE" });
 }
+
+async function getInstructions() {
+  const resp = await apiFetch("/api/instructions");
+  return await resp.json();
+}
+
+async function saveInstructions(content) {
+  const resp = await apiFetch("/api/instructions", { method: "PUT", body: JSON.stringify({ content }) });
+  return await resp.json();
+}
+
+async function resetInstructions() {
+  const resp = await apiFetch("/api/instructions", { method: "DELETE" });
+  return await resp.json();
+}
