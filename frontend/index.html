@@ -226,6 +226,150 @@
         background: var(--user-bubble);
       }
 
+      /* --- Custom instructions modal --- */
+      .header-btn {
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 4px 14px;
+        font-size: 0.82rem;
+        color: var(--text);
+        cursor: pointer;
+        transition: background 120ms ease;
+      }
+
+      .header-btn:hover {
+        background: var(--user-bubble);
+      }
+
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        z-index: 50;
+      }
+
+      .modal {
+        width: 100%;
+        max-width: 640px;
+        max-height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 24px;
+        border-radius: 16px;
+        background: var(--bg-page);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+        animation: slideUp 180ms ease-out;
+      }
+
+      .modal-title {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+
+      .modal-subtitle {
+        margin: 0;
+        font-size: 0.88rem;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .modal-badge {
+        display: inline-block;
+        margin-left: 8px;
+        padding: 1px 8px;
+        border-radius: 999px;
+        background: var(--user-bubble);
+        border: 1px solid var(--border);
+        color: var(--text);
+        font-size: 0.75rem;
+      }
+
+      .modal-textarea {
+        width: 100%;
+        min-height: 220px;
+        resize: vertical;
+        padding: 12px 14px;
+        border: 1px solid var(--composer-border);
+        border-radius: 10px;
+        font: inherit;
+        font-size: 0.92rem;
+        line-height: 1.5;
+        color: var(--text);
+        background: var(--bg-page);
+        outline: none;
+      }
+
+      .modal-textarea:focus {
+        border-color: #b0b0b0;
+      }
+
+      .modal-meta {
+        display: flex;
+        gap: 12px;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .modal-status {
+        color: #1e7e34;
+      }
+
+      .modal-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .modal-actions-right {
+        display: flex;
+        gap: 8px;
+      }
+
+      .modal-btn {
+        padding: 8px 16px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: transparent;
+        color: var(--text);
+        font: inherit;
+        font-size: 0.88rem;
+        cursor: pointer;
+        transition: background 120ms ease;
+      }
+
+      .modal-btn:hover:not(:disabled) {
+        background: var(--user-bubble);
+      }
+
+      .modal-btn.primary {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .modal-btn.primary:hover:not(:disabled) {
+        background: var(--accent-hover);
+      }
+
+      .modal-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .modal-btn.ghost {
+        border-color: transparent;
+        color: var(--muted);
+      }
+
       /* --- Auth styles --- */
       .auth-shell {
         width: 100%;
@@ -528,6 +672,7 @@
     <script type="text/babel" src="/frontend/src/MessageContent.jsx"></script>
     <script type="text/babel" src="/frontend/src/Composer.jsx"></script>
     <script type="text/babel" src="/frontend/src/Sidebar.jsx"></script>
+    <script type="text/babel" src="/frontend/src/InstructionsModal.jsx"></script>
     <script type="text/babel" src="/frontend/src/App.jsx"></script>
   </body>
 </html>

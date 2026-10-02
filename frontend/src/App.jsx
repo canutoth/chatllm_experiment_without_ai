@@ -14,6 +14,7 @@ function App() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [instructionsOpen, setInstructionsOpen] = useState(false);
   const messagesRef = useRef(null);
   const abortControllerRef = useRef(null);
 
@@ -149,7 +150,10 @@ function App() {
     setActiveSessionId(null);
     setMessages([]);
     setError("");
+    setInstructionsOpen(false);
   };
+
+  const closeInstructions = useCallback(() => setInstructionsOpen(false), []);
 
   const onStop = () => {
     abortControllerRef.current?.abort();
@@ -268,6 +272,7 @@ function App() {
             <div className="brand">ChatLLM Lab</div>
           </div>
           <div className="header-right">
+            <button className="header-btn" onClick={() => setInstructionsOpen(true)}>Instrucoes</button>
             <span className="user-email">{userEmail}</span>
             <button className="logout-btn" onClick={handleLogout}>Sair</button>
           </div>
@@ -292,10 +297,11 @@ function App() {
           onStop={onStop}
         />
       </main>
+
+      <InstructionsModal open={instructionsOpen} onClose={closeInstructions} />
     </div>
   );
 }
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<App />);
-
